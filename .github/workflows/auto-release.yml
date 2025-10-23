@@ -1,0 +1,55 @@
+name: Auto Release on Labeled PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  create_release:
+    if: >
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'release')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract version from PR title
+        id: ver
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          # Ищем шаблон версии: v1.2.3 или v1.2.3-suffix
+          if [[ "$TITLE" =~ (v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9._-]+)?) ]]; then
+            VER="${BASH_REMATCH[1]}"
+            echo "version=$VER" >> "$GITHUB_OUTPUT"
+            echo "Detected version: $VER"
+          else
+            echo "No version found in PR title. Expected like: 'release: v1.0.1'" >&2
+            exit 1
+          fi
+
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Ensure tag exists (create if missing)
+        run: |
+          VER="${{ steps.ver.outputs.version }}"
+          if git rev-parse -q --verify "refs/tags/$VER"; then
+            echo "Tag $VER already exists."
+          else
+            echo "Creating tag $VER at HEAD of main"
+            git tag -a "$VER" -m "Release $VER"
+            git push origin "$VER"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.version }}
+          name: ${{ steps.ver.outputs.version }}
+          body: ${{ github.event.pull_request.body }}
+          generate_release_notes: true
