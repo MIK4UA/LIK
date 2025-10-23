@@ -48,42 +48,39 @@ jobs:
             git checkout -b "$BRANCH"
           fi
 
-      - name: Create folders and files
+      - name: Create folders
+        run: |
+          set -e
+          mkdir -p 00_ADMIN/OKR 00_ADMIN/MEETINGS
+          mkdir -p 01_FOUNDATION/STRATEGY 01_FOUNDATION/BRAND/Logo 01_FOUNDATION/LEGAL/Contracts 01_FOUNDATION/FINANCE 01_FOUNDATION/RESEARCH
+          mkdir -p 10_PROJECT_A_Health_Diagnostics/PRODUCT/Protocols 10_PROJECT_A_Health_Diagnostics/PRODUCT/Reports 10_PROJECT_A_Health_Diagnostics/OPS/Lab_Partners 10_PROJECT_A_Health_Diagnostics/OPS/Compliance 10_PROJECT_A_Health_Diagnostics/DATA_MODELS 10_PROJECT_A_Health_Diagnostics/METRICS
+          mkdir -p 20_PROJECT_B_Nutrition_Fitness/LIBRARY/MealPlans 20_PROJECT_B_Nutrition_Fitness/LIBRARY/TrainingPlans 20_PROJECT_B_Nutrition_Fitness/PERSONALIZATION 20_PROJECT_B_Nutrition_Fitness/SUPPLEMENTS
+          mkdir -p 30_PROJECT_C_App_Monitoring/SPECS/Integrations 30_PROJECT_C_App_Monitoring/UX/Wireframes 30_PROJECT_C_App_Monitoring/SECURITY 30_PROJECT_C_App_Monitoring/ANALYTICS
+          mkdir -p 40_PROJECT_D_Psych_Productivity/PROTOCOLS 40_PROJECT_D_Psych_Productivity/ETHICS
+          mkdir -p 50_PROJECT_E_Edtech_Career/CURRICULA 50_PROJECT_E_Edtech_Career/IDP 50_PROJECT_E_Edtech_Career/B2B
+          mkdir -p 60_PROJECT_F_Finance_Legal/FINANCE 60_PROJECT_F_Finance_Legal/LEGAL_SERVICES
+          mkdir -p 70_PROJECT_G_Environment_Style/SERVICES 70_PROJECT_G_Environment_Style/PARTNERS
+          mkdir -p 80_PROJECT_H_Institute_DivinePlan/CHARTER 80_PROJECT_H_Institute_DivinePlan/LIBRARY/Sources 80_PROJECT_H_Institute_DivinePlan/COURSES 80_PROJECT_H_Institute_DivinePlan/PUBLICATIONS
+          mkdir -p 90_SHARED_RESOURCES/TEMPLATES 90_SHARED_RESOURCES/ADR 90_SHARED_RESOURCES/EXPORTS/Presentations 90_SHARED_RESOURCES/EXPORTS/PDFs
+          mkdir -p .github/ISSUE_TEMPLATE
+
+      - name: Create files
         shell: bash
         run: |
           set -e
 
-          # Helper to write files with heredoc
-          write_file() {
-            local path="$1"; shift
-            mkdir -p "$(dirname "$path")"
-            cat > "$path" <<'EOF'
-$CONTENT$
+          # Helper to write file with EOF safely
+          create() { mkdir -p "$(dirname "$1")"; cat >"$1" <<'EOF'
+$2
 EOF
           }
 
-          # Root README
-          mkdir -p 00_ADMIN 01_FOUNDATION 90_SHARED_RESOURCES/TEMPLATES 90_SHARED_RESOURCES/ADR
-          mkdir -p 10_PROJECT_A_Health_Diagnostics/{PRODUCT/Protocols,OPS/{Lab_Partners,Compliance},DATA_MODELS,METRICS}
-          mkdir -p 20_PROJECT_B_Nutrition_Fitness/{LIBRARY/{MealPlans,TrainingPlans},PERSONALIZATION,SUPPLEMENTS}
-          mkdir -p 30_PROJECT_C_App_Monitoring/{SPECS/Integrations,UX/Wireframes,SECURITY,ANALYTICS}
-          mkdir -p 40_PROJECT_D_Psych_Productivity/{PROTOCOLS,ETHICS}
-          mkdir -p 50_PROJECT_E_Edtech_Career/{CURRICULA,IDP,B2B}
-          mkdir -p 60_PROJECT_F_Finance_Legal/{FINANCE,LEGAL_SERVICES}
-          mkdir -p 70_PROJECT_G_Environment_Style/{SERVICES,PARTNERS}
-          mkdir -p 80_PROJECT_H_Institute_DivinePlan/{CHARTER,LIBRARY/Sources,COURSES,PUBLICATIONS}
-          mkdir -p .github/ISSUE_TEMPLATE
-
-          # Root README.md
+          # Root
           cat > README.md <<'EOF'
 ### ЛИК — Лидерско‑интеграционная страна
-
 Репозиторий структуры проектов A–H, общих документов и процессов.
 - Статус: Active
-- Язык: RU (в дальнейшем можно добавить EN/UA)
-- Контакты: CODEOWNERS
-
-См. папки 00_ADMIN, 01_FOUNDATION, 10–80 (проекты), 90_SHARED_RESOURCES.
+- Язык: RU (EN/UA позже)
 EOF
 
           # 00_ADMIN
@@ -91,40 +88,26 @@ EOF
 ### 00_ADMIN
 Администрирование: управление, роли, дорожные карты, встречи, изменения.
 EOF
-
           cat > 00_ADMIN/GOVERNANCE.md <<'EOF'
 ### Governance
-- Роли и ответственность
-- Процессы принятия решений (ADR)
-- Правила работы с репозиторием
+Роли, процессы принятия решений (ADR), правила репозитория.
 EOF
-
           cat > 00_ADMIN/TEAM.md <<'EOF'
 ### Team
-- Владельцы направлений (добавить)
-- Контакты (добавить)
+Состав и контакты (заполнить).
 EOF
-
           cat > 00_ADMIN/ROADMAP.md <<'EOF'
 ### Roadmap (высокоуровневая)
-- Волна 1: A/B/C (0–6 мес)
-- Волна 2: D/E (6–12 мес)
-- Волна 3: F/G (9–18 мес)
-- Параллельно: H (институт)
+Волна 1: A/B/C; Волна 2: D/E; Волна 3: F/G; Параллельно: H.
 EOF
-
-          mkdir -p 00_ADMIN/OKR 00_ADMIN/MEETINGS
           cat > 00_ADMIN/OKR/OKR_2025_Q4_v1.0.md <<'EOF'
 ### OKR 2025 Q4
-- O1: Запуск MVP A+B+C
-- KR: 20 пилотных клиентов, NPS > 50
+O1: Запуск MVP A+B+C; KR: 20 пилотов, NPS>50.
 EOF
-
           cat > 00_ADMIN/MEETINGS/2025-10-23_kickoff_minutes.md <<'EOF'
 ### Kickoff 2025-10-23
-Итоги: утверждение структуры репозитория и правил версионирования.
+Утверждена структура репозитория и правила версионирования.
 EOF
-
           cat > 00_ADMIN/CHANGELOG.md <<'EOF'
 # Changelog (00_ADMIN)
 ## [1.0.0] - 2025-10-23
@@ -136,49 +119,36 @@ EOF
 ### 01_FOUNDATION
 Визия, стратегия, бренд, юридика, финансы, исследования.
 EOF
-
-          mkdir -p 01_FOUNDATION/STRATEGY 01_FOUNDATION/BRAND/Logo 01_FOUNDATION/LEGAL/Contracts 01_FOUNDATION/FINANCE 01_FOUNDATION/RESEARCH
           cat > 01_FOUNDATION/VISION.md <<'EOF'
 ### Визия ЛИК
-Поиск, развитие и поддержка лидеров; максимальное раскрытие потенциала человека (тело‑разум‑дух).
+Поиск, развитие и поддержка лидеров; раскрытие потенциала (тело‑разум‑дух).
 EOF
-
           cat > 01_FOUNDATION/STRATEGY/Strategy_v1.0.md <<'EOF'
 ### Стратегия v1.0
-Старт с ядра HealthTech (A+B+C), далее D/E, затем F/G; институт H — параллельно.
+Старт: HealthTech (A+B+C), затем D/E, потом F/G; H — параллельно.
 EOF
-
           cat > 01_FOUNDATION/STRATEGY/GTM_v1.0.md <<'EOF'
 ### GTM v1.0
 ICP: high performers 25–55, топ‑менеджеры, фаундеры, B2B.
 EOF
-
           cat > 01_FOUNDATION/LEGAL/PrivacyPolicy_v1.0.md <<'EOF'
 ### Политика конфиденциальности (черновик)
-Данные здоровья — чувствительные. Минимизация, шифрование, доступ по ролям.
+Минимизация, шифрование, роли доступа.
 EOF
-
           cat > 01_FOUNDATION/LEGAL/TermsOfService_v1.0.md <<'EOF'
 ### Условия использования (черновик)
-Сервис wellness/коучинг, не замещает медицинскую помощь.
+Wellness/коучинг; не замещает медицинскую помощь.
 EOF
-
-          cat > 01_FOUNDATION/FINANCE/UnitEconomics_v1.0.xlsx <<'EOF'
-EOF
-
-          cat > 01_FOUNDATION/FINANCE/PricingMatrix_v1.1.xlsx <<'EOF'
-EOF
-
+          : > 01_FOUNDATION/FINANCE/UnitEconomics_v1.0.xlsx
+          : > 01_FOUNDATION/FINANCE/PricingMatrix_v1.1.xlsx
           cat > 01_FOUNDATION/RESEARCH/MarketOverview_v1.0.md <<'EOF'
 ### Обзор рынка v1.0
-Краткое описание сегментов HealthTech/EdTech/Wellness.
+Сегменты HealthTech/EdTech/Wellness.
 EOF
-
           cat > 01_FOUNDATION/RESEARCH/CompetitorMap_v1.0.md <<'EOF'
 ### Карта конкурентов v1.0
-Соседние решения по модулям A–H.
+Решения по модулям A–H.
 EOF
-
           cat > 01_FOUNDATION/RESEARCH/References.md <<'EOF'
 ### Источники и ссылки
 (добавлять по мере работы)
@@ -189,72 +159,57 @@ EOF
 ### Проект A: Диагностика и персональное здоровье
 MVP: чекап + персональные протоколы + коучинг + мониторинг.
 EOF
-
-          mkdir -p 10_PROJECT_A_Health_Diagnostics/PRODUCT/Reports
           cat > 10_PROJECT_A_Health_Diagnostics/PRODUCT/MVP_Spec_v1.0.md <<'EOF'
 ### MVP Spec v1.0 (Проект A)
 Комбо-чекап, персональные рекомендации, 8–12 недель сопровождения.
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/PRODUCT/Protocols/Checkup_Basic_v1.2.md <<'EOF'
 ### Базовый чекап v1.2
 ОАК, липиды, HbA1c, TSH, CRP, ферритин, печёночные, почечные; сон/стресс по wearables.
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/PRODUCT/Protocols/Checkup_Advanced_v1.0.md <<'EOF'
 ### Расширенный чекап v1.0
 Гормоны, нутриенты, омега-индекс, микробиом (add-on), кардио-скрининг по рискам.
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/PRODUCT/Protocols/DNA_AddOn_v0.9.md <<'EOF'
 ### ДНК модуль v0.9
 Генетические панели как add-on с клинической интерпретацией.
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/PRODUCT/Coaching_Scripts_v1.0.md <<'EOF'
 ### Скрипты коучинга v1.0
-Онбординг, постановка целей, еженедельные ревью, коррекция.
+Онбординг, цели, еженедельные ревью, коррекция.
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/PRODUCT/Reports/ClientReport_template_v1.1.md <<'EOF'
 ### Шаблон отчёта клиента v1.1
 Цели, биомаркеры, рекомендации, прогресс, следующие шаги.
 EOF
-
-          mkdir -p 10_PROJECT_A_Health_Diagnostics/OPS/Lab_Partners 10_PROJECT_A_Health_Diagnostics/OPS/Compliance
           cat > 10_PROJECT_A_Health_Diagnostics/OPS/Lab_Partners/PartnerList_v1.0.csv <<'EOF'
 name,country,contact,notes
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/OPS/Compliance/Wellness_Positioning_v1.0.md <<'EOF'
 ### Позиционирование как wellness v1.0
 Без диагностики заболеваний; маршрутизация к врачам при red flags.
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/DATA_MODELS/Biomarkers_schema_v1.0.yaml <<'EOF'
-# Схема биомаркеров v1.0 (черновик)
+# Схема биомаркеров v1.0
 biomarkers:
   - id: hbA1c
     unit: "%"
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/DATA_MODELS/IntakeForms_schema_v1.0.yaml <<'EOF'
 # Схема анкет онбординга v1.0
 forms:
   - id: lifestyle
     fields: []
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/METRICS/KPI_Definitions_v1.0.md <<'EOF'
 ### KPI v1.0
-Retention, NPS, выполнение планов, улучшения по ключевым биомаркерам.
+Retention, NPS, выполнение планов, улучшения по биомаркерам.
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/METRICS/Dashboard_Spec_v1.0.md <<'EOF'
 ### Дашборд v1.0
 Цели → метрики → рекомендации → коррекция.
 EOF
-
           cat > 10_PROJECT_A_Health_Diagnostics/CHANGELOG.md <<'EOF'
 # Changelog (A)
 ## [1.0.0] - 2025-10-23
@@ -264,48 +219,39 @@ EOF
           # 20_PROJECT_B
           cat > 20_PROJECT_B_Nutrition_Fitness/README.md <<'EOF'
 ### Проект B: Питание и физнагрузки
-Библиотека планов, персонализация, нутрацевтики по показаниям.
+Библиотека планов, персонализация, нутрацевтики.
 EOF
-
           cat > 20_PROJECT_B_Nutrition_Fitness/LIBRARY/MealPlans/WeightLoss_12w_v1.0.md <<'EOF'
 ### План питания: снижение веса 12 недель v1.0
 (черновик)
 EOF
-
           cat > 20_PROJECT_B_Nutrition_Fitness/LIBRARY/MealPlans/EnergyFocus_8w_v1.0.md <<'EOF'
 ### План питания: энергия и фокус 8 недель v1.0
 (черновик)
 EOF
-
           cat > 20_PROJECT_B_Nutrition_Fitness/LIBRARY/TrainingPlans/Strength_12w_v1.0.md <<'EOF'
 ### Тренировки: сила 12 недель v1.0
 (черновик)
 EOF
-
           cat > 20_PROJECT_B_Nutrition_Fitness/LIBRARY/TrainingPlans/Cardio_8w_v1.0.md <<'EOF'
 ### Тренировки: кардио 8 недель v1.0
 (черновик)
 EOF
-
           cat > 20_PROJECT_B_Nutrition_Fitness/PERSONALIZATION/Rules_v1.0.md <<'EOF'
 ### Правила персонализации v1.0
 Алгоритмы адаптации планов под цели и данные клиента.
 EOF
-
           cat > 20_PROJECT_B_Nutrition_Fitness/PERSONALIZATION/Algorithm_Spec_v0.9.md <<'EOF'
 ### Спецификация алгоритма v0.9
 Входы: анкеты, wearables, чекапы. Выход: план и nudges.
 EOF
-
           cat > 20_PROJECT_B_Nutrition_Fitness/SUPPLEMENTS/Protocols_v1.0.md <<'EOF'
 ### Протоколы нутрацевтиков v1.0
-Назначение только по показаниям, качество и безопасность — приоритет.
+Назначение по показаниям, контроль качества.
 EOF
-
           cat > 20_PROJECT_B_Nutrition_Fitness/SUPPLEMENTS/Partners_v1.0.csv <<'EOF'
 name,country,contact,notes
 EOF
-
           cat > 20_PROJECT_B_Nutrition_Fitness/CHANGELOG.md <<'EOF'
 # Changelog (B)
 ## [1.0.0] - 2025-10-23
@@ -317,43 +263,34 @@ EOF
 ### Проект C: Приложение и мониторинг
 Интеграции, коуч-чат, отчёты, безопасность данных.
 EOF
-
-          mkdir -p 30_PROJECT_C_App_Monitoring/SPECS/Integrations 30_PROJECT_C_App_Monitoring/UX/Wireframes 30_PROJECT_C_App_Monitoring/SECURITY 30_PROJECT_C_App_Monitoring/ANALYTICS
           cat > 30_PROJECT_C_App_Monitoring/SPECS/PRD_App_v1.0.md <<'EOF'
 ### PRD App v1.0
 Сбор данных, дашборды, nudges, коуч-чат.
 EOF
-
           cat > 30_PROJECT_C_App_Monitoring/SPECS/Integrations/AppleHealth_v1.0.md <<'EOF'
 ### Интеграция Apple Health v1.0
 Диапазон метрик и разрешения.
 EOF
-
           cat > 30_PROJECT_C_App_Monitoring/SPECS/Integrations/Oura_v1.0.md <<'EOF'
 ### Интеграция Oura v1.0
 Сон, readiness, активность.
 EOF
-
           cat > 30_PROJECT_C_App_Monitoring/SECURITY/DataSecurityPolicy_v1.0.md <<'EOF'
 ### Политика безопасности данных v1.0
 Шифрование, доступы, хранение секретов, DPIA.
 EOF
-
           cat > 30_PROJECT_C_App_Monitoring/SECURITY/DPIA_v1.0.md <<'EOF'
 ### DPIA v1.0
 Оценка влияния на защиту данных.
 EOF
-
           cat > 30_PROJECT_C_App_Monitoring/ANALYTICS/Events_Taxonomy_v1.0.yaml <<'EOF'
 # Таксономия событий v1.0
 events: []
 EOF
-
           cat > 30_PROJECT_C_App_Monitoring/ANALYTICS/Metrics_Pipeline_v1.0.md <<'EOF'
 ### Пайплайн метрик v1.0
 Сбор → хранение → визуализация.
 EOF
-
           cat > 30_PROJECT_C_App_Monitoring/CHANGELOG.md <<'EOF'
 # Changelog (C)
 ## [1.0.0] - 2025-10-23
@@ -365,33 +302,26 @@ EOF
 ### Проект D: Психология и продуктивность
 Скрининги, CBT/ACT, коучинг фокуса и энергии.
 EOF
-
-          mkdir -p 40_PROJECT_D_Psych_Productivity/PROTOCOLS 40_PROJECT_D_Psych_Productivity/ETHICS
           cat > 40_PROJECT_D_Psych_Productivity/PROTOCOLS/Screening_v1.0.md <<'EOF'
 ### Психо-скрининг v1.0
 Анкеты, шкалы, критерии.
 EOF
-
           cat > 40_PROJECT_D_Psych_Productivity/PROTOCOLS/CBT_ACT_v1.0.md <<'EOF'
 ### CBT/ACT протоколы v1.0
 Стандартизированные вмешательства для wellness.
 EOF
-
           cat > 40_PROJECT_D_Psych_Productivity/PROTOCOLS/Productivity_Coaching_v1.0.md <<'EOF'
 ### Коучинг продуктивности v1.0
 Фокус, приоритезация, календарь, энерджи-менеджмент.
 EOF
-
           cat > 40_PROJECT_D_Psych_Productivity/ETHICS/EscalationPolicy_v1.0.md <<'EOF'
 ### Политика эскалации v1.0
 Маршрутизация при red flags к клиницистам.
 EOF
-
           cat > 40_PROJECT_D_Psych_Productivity/ETHICS/RedFlags_Routing_v1.0.md <<'EOF'
 ### Red Flags v1.0
 Список красных флагов и пути направления.
 EOF
-
           cat > 40_PROJECT_D_Psych_Productivity/CHANGELOG.md <<'EOF'
 # Changelog (D)
 ## [1.0.0] - 2025-10-23
@@ -403,37 +333,29 @@ EOF
 ### Проект E: Обучение и карьера
 Курсы, IDP, карьерная аналитика, B2B-академии.
 EOF
-
-          mkdir -p 50_PROJECT_E_Edtech_Career/CURRICULA 50_PROJECT_E_Edtech_Career/IDP 50_PROJECT_E_Edtech_Career/B2B
           cat > 50_PROJECT_E_Edtech_Career/CURRICULA/Leadership_Productivity_v1.0.md <<'EOF'
 ### Лидерская продуктивность v1.0
 Контуры курса.
 EOF
-
           cat > 50_PROJECT_E_Edtech_Career/CURRICULA/DecisionMaking_v1.0.md <<'EOF'
 ### Принятие решений v1.0
 Контуры курса.
 EOF
-
           cat > 50_PROJECT_E_Edtech_Career/IDP/IDP_Template_v1.0.md <<'EOF'
 ### Шаблон IDP v1.0
 Цели → навыки → проекты → метрики.
 EOF
-
           cat > 50_PROJECT_E_Edtech_Career/IDP/SkillsMatrix_v1.0.csv <<'EOF'
 skill,level,notes
 EOF
-
           cat > 50_PROJECT_E_Edtech_Career/B2B/CorporateAcademy_Offer_v1.0.md <<'EOF'
 ### Предложение корпоративной академии v1.0
 Форматы, цены, KPI.
 EOF
-
           cat > 50_PROJECT_E_Edtech_Career/B2B/CaseStudy_Template_v1.0.md <<'EOF'
 ### Шаблон кейса v1.0
 Проблема → Решение → Результат (KPI).
 EOF
-
           cat > 50_PROJECT_E_Edtech_Career/CHANGELOG.md <<'EOF'
 # Changelog (E)
 ## [1.0.0] - 2025-10-23
@@ -445,27 +367,21 @@ EOF
 ### Проект F: Финансы и юрподдержка
 Финпланы, страхование, договоры, партнёрская сеть.
 EOF
-
-          mkdir -p 60_PROJECT_F_Finance_Legal/FINANCE 60_PROJECT_F_Finance_Legal/LEGAL_SERVICES
           cat > 60_PROJECT_F_Finance_Legal/FINANCE/PersonalPlan_Template_v1.0.md <<'EOF'
 ### Шаблон финплана v1.0
 Бюджет, цели, инвестиции.
 EOF
-
           cat > 60_PROJECT_F_Finance_Legal/FINANCE/Insurance_Guide_v1.0.md <<'EOF'
 ### Гид по страхованию v1.0
 Типы полисов, критерии выбора.
 EOF
-
           cat > 60_PROJECT_F_Finance_Legal/LEGAL_SERVICES/ContractTemplates_Index_v1.0.md <<'EOF'
 ### Индекс шаблонов договоров v1.0
 NDA, партнёрские соглашения, оферты.
 EOF
-
           cat > 60_PROJECT_F_Finance_Legal/LEGAL_SERVICES/PartnerNetwork_v1.0.csv <<'EOF'
 name,country,contact,service
 EOF
-
           cat > 60_PROJECT_F_Finance_Legal/CHANGELOG.md <<'EOF'
 # Changelog (F)
 ## [1.0.0] - 2025-10-23
@@ -477,26 +393,20 @@ EOF
 ### Проект G: Среда, стиль, логистика
 Здоровый дом/офис, логистика, стиль под цели.
 EOF
-
-          mkdir -p 70_PROJECT_G_Environment_Style/SERVICES 70_PROJECT_G_Environment_Style/PARTNERS
           cat > 70_PROJECT_G_Environment_Style/SERVICES/HealthyHome_Spec_v1.0.md <<'EOF'
 ### Healthy Home v1.0
 Воздух, свет, шум, материалы.
 EOF
-
           cat > 70_PROJECT_G_Environment_Style/SERVICES/Workspace_Optimization_v1.0.md <<'EOF'
 ### Оптимизация рабочего места v1.0
 Эргономика, свет, шум, микропаузи.
 EOF
-
           cat > 70_PROJECT_G_Environment_Style/PARTNERS/Interior_Designers_v1.0.csv <<'EOF'
 name,country,contact,notes
 EOF
-
           cat > 70_PROJECT_G_Environment_Style/PARTNERS/Logistics_v1.0.csv <<'EOF'
 name,country,contact,notes
 EOF
-
           cat > 70_PROJECT_G_Environment_Style/CHANGELOG.md <<'EOF'
 # Changelog (G)
 ## [1.0.0] - 2025-10-23
@@ -508,43 +418,34 @@ EOF
 ### Проект H: Институт изучения Божественного Плана
 Академическая независимость, методология, публикации.
 EOF
-
-          mkdir -p 80_PROJECT_H_Institute_DivinePlan/CHARTER 80_PROJECT_H_Institute_DivinePlan/LIBRARY/Sources 80_PROJECT_H_Institute_DivinePlan/COURSES 80_PROJECT_H_Institute_DivinePlan/PUBLICATIONS
           cat > 80_PROJECT_H_Institute_DivinePlan/CHARTER/Mission_Methodology_v1.0.md <<'EOF'
 ### Миссия и методология v1.0
 Межконфессиональный, академический подход, открытая методология.
 EOF
-
           cat > 80_PROJECT_H_Institute_DivinePlan/CHARTER/EthicsCode_v1.0.md <<'EOF'
 ### Этический кодекс v1.0
-Уважение традиций, интеллектуальная честность, отсутствие политизации.
+Уважение традиций, честность, отсутствие политизации.
 EOF
-
           cat > 80_PROJECT_H_Institute_DivinePlan/CHARTER/AdvisoryBoard_v1.0.md <<'EOF'
 ### Совет (черновик)
 Роли, критерии участия.
 EOF
-
           cat > 80_PROJECT_H_Institute_DivinePlan/LIBRARY/Canon_Index_v1.0.md <<'EOF'
 ### Канон/индекс источников v1.0
 Писания, комментарии, жития, академические труды.
 EOF
-
           cat > 80_PROJECT_H_Institute_DivinePlan/COURSES/IntroCourse_v1.0.md <<'EOF'
 ### Вводный курс v1.0
 Структура, темы, литература.
 EOF
-
           cat > 80_PROJECT_H_Institute_DivinePlan/COURSES/Lecture_Outlines_v1.0.md <<'EOF'
 ### Конспекты лекций v1.0
 Оглавление, тезисы, библиография.
 EOF
-
           cat > 80_PROJECT_H_Institute_DivinePlan/PUBLICATIONS/Trends_Report_2025_v0.1.md <<'EOF'
 ### Отчёт о тенденциях 2025 v0.1
 Черновик методологии и гипотез.
 EOF
-
           cat > 80_PROJECT_H_Institute_DivinePlan/CHANGELOG.md <<'EOF'
 # Changelog (H)
 ## [1.0.0] - 2025-10-23
@@ -556,8 +457,6 @@ EOF
 ### 90_SHARED_RESOURCES
 Шаблоны, ADR, экспортируемые материалы.
 EOF
-
-          mkdir -p 90_SHARED_RESOURCES/EXPORTS/{Presentations,PDFs}
           cat > 90_SHARED_RESOURCES/TEMPLATES/README_Template.md <<'EOF'
 # {Папка/Проект}: описание
 Статус: Draft/Active/Deprecated
@@ -566,14 +465,12 @@ EOF
 Содержимое:
 Ссылки:
 EOF
-
           cat > 90_SHARED_RESOURCES/TEMPLATES/CHANGELOG_Template.md <<'EOF'
 # Changelog
-Формат: SemVer (X.Y.Z), даты YYYY-MM-DD.
+SemVer (X.Y.Z), даты YYYY-MM-DD.
 ## [1.0.0] - 2025-10-23
 - Initial
 EOF
-
           cat > 90_SHARED_RESOURCES/TEMPLATES/ADR_Template.md <<'EOF'
 # ADR-XXXX: {Тема}
 Дата: YYYY-MM-DD
@@ -585,7 +482,6 @@ EOF
 Влияния/Риски:
 Связанные документы:
 EOF
-
           cat > 90_SHARED_RESOURCES/TEMPLATES/MeetingMinutes_Template.md <<'EOF'
 # Встреча: {тема}
 Дата/время:
@@ -595,7 +491,6 @@ EOF
 Действия/ответственные/сроки:
 Ссылки:
 EOF
-
           cat > 90_SHARED_RESOURCES/TEMPLATES/ClientReport_Template.md <<'EOF'
 # Отчёт клиента: {ФИО/ID}
 Период:
@@ -605,12 +500,11 @@ EOF
 Прогресс/корректировки:
 Следующие шаги:
 EOF
-
           cat > 90_SHARED_RESOURCES/ADR/ADR_0001_repo_structure_v1.0.md <<'EOF'
 # ADR-0001: Структура репозитория и версионирование
 Дата: 2025-10-23
 Статус: Accepted
-Решение: структура папок A–H, 00/01/90; SemVer в именах файлов; CHANGELOG per проект.
+Решение: структура папок A–H, 00/01/90; SemVer в именах; CHANGELOG per проект.
 EOF
 
           # .github meta
@@ -625,8 +519,6 @@ EOF
 ### Ссылки
 - ADR/Issue: ...
 EOF
-
-          mkdir -p .github/ISSUE_TEMPLATE
           cat > .github/ISSUE_TEMPLATE/feature_request.md <<'EOF'
 name: Feature request
 description: Предложение фичи/документа
@@ -645,7 +537,6 @@ body:
     attributes:
       label: Критерии приёмки
 EOF
-
           cat > .github/ISSUE_TEMPLATE/task.md <<'EOF'
 name: Task
 description: Обычная задача
@@ -661,9 +552,6 @@ body:
     attributes:
       label: Проект/папка
 EOF
-
-          # CODEOWNERS — замените @MIK4UA при необходимости вручную позже
-          mkdir -p .github
           cat > .github/CODEOWNERS <<'EOF'
 * @MIK4UA
 EOF
