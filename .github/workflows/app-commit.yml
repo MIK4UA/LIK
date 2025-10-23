@@ -1,0 +1,78 @@
+name: App Commit/PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "commit or pr"
+        required: true
+        default: "pr"
+      branch:
+        description: "target branch name to create or use"
+        required: true
+        default: "chore/bootstrap"
+      commit_message:
+        description: "commit message"
+        required: false
+        default: "chore: automated update"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (main)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Получаем installation token из наших секретов (без префикса GITHUB_)
+      - name: Generate installation token
+        id: app-token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          installation_id: ${{ secrets.APP_INSTALLATION_ID }}
+
+      - name: Configure git as App
+        run: |
+          git config user.name "lik-app[bot]"
+          git config user.email "lik-app[bot]@users.noreply.github.com"
+
+      - name: Create or switch branch
+        run: |
+          BRANCH="${{ github.event.inputs.branch }}"
+          if git ls-remote --exit-code --heads origin "$BRANCH"; then
+            git checkout "$BRANCH"
+            git pull origin "$BRANCH"
+          else
+            git checkout -b "$BRANCH"
+          fi
+
+      # Здесь позже будем добавлять шаги генерации/обновления файлов.
+      # Сейчас workflow просто зафиксирует любые изменения, если они есть.
+
+      - name: Commit changes (if any)
+        run: |
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "${{ github.event.inputs.commit_message }}"
+            git push "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}.git" HEAD:${{ github.event.inputs.branch }}
+          else
+            echo "No changes to commit."
+          fi
+
+      - name: Create PR (if requested)
+        if: ${{ github.event.inputs.action == 'pr' }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          commit-message: ${{ github.event.inputs.commit_message }}
+          branch: ${{ github.event.inputs.branch }}
+          title: "chore: automated update via App"
+          body: "Automated update using GitHub App"
+          base: main
