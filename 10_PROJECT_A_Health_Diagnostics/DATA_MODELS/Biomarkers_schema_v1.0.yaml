@@ -1,0 +1,4 @@
+# Схема биомаркеров v1.0
+biomarkers:
+  - id: hbA1c
+    unit: "%"

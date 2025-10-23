@@ -1,0 +1,4 @@
+# Схема анкет онбординга v1.0
+forms:
+  - id: lifestyle
+    fields: []
